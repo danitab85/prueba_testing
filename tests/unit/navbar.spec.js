@@ -17,8 +17,8 @@ const store = new Vuex.Store(myStore)
 const router = new VueRouter(myRoutes)
 
 describe('Navbar.vue', () => {
-  it('muestra menu de login si no hay usuario', () => {
-    store.dispatch('updateUser', undefined)
+  it('muestra menu de login si el usuario no ha iniciado sesión', () => {
+    //arrange
     const wrapper = mount(Navbar, {
       propsData: {
         title: "Mi Tienda"
@@ -27,19 +27,22 @@ describe('Navbar.vue', () => {
       store,
       router,
     })
+    //action
+    store.dispatch('updateUser', undefined)
+    //assert
     expect(wrapper.text()).to.include('Login')
   }),
-  it('muestra menu de usuario si está logueado', () => {
-    store.dispatch('updateUser', { email: 'user@mystore.com' })
-    const wrapper = mount(Navbar, {
-      propsData: {
-        title: "Mi Tienda"
-      },
-      localVue,
-      store,
-      router,
+    it('muestra menu de usuario si está logueado', () => {
+      const wrapper = mount(Navbar, {
+        propsData: {
+          title: "Mi Tienda"
+        },
+        localVue,
+        store,
+        router,
+      })
+      store.dispatch('updateUser', { email: 'user@mystore.com' })
+      expect(wrapper.text()).to.include('Usuario')
+      expect(wrapper.text()).to.not.include('Login')
     })
-    expect(wrapper.text()).to.include('Usuario')
-    expect(wrapper.text()).to.not.include('Login')
-  })
 })
